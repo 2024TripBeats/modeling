@@ -1,8 +1,21 @@
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
-#  user_preferences: 선호 순서의 장소 이름 리스트
-def recommend_places(similarity_df, user_preferences):
+def recommend_places(similarity_df, user_preference_numbers):
+    # 장소와 번호의 매핑 정의
+    place_to_number = {
+        '안흥지 애련정': 1,
+        'KT&G상상마당 홍대': 2,
+        '명동난타극장': 3,
+        '백운계곡관광지': 4,
+        '소래역사관': 5
+    }
+
+    number_to_place = {v: k for k, v in place_to_number.items()}
+
+    # 숫자 리스트를 장소 이름 리스트로 변환
+    user_preferences = [number_to_place[num] for num in user_preference_numbers]
+    
     # 가중치 정의
     weights = [1.0, 0.8, 0.5, 0.1, 0.05]
     score_dict = {place: weights[i] for i, place in enumerate(user_preferences)}
