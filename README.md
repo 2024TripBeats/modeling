@@ -35,7 +35,9 @@ TripBeats는 당신의 취향과 선호도에 맞춰 완벽한 여행지를 추�
 
 ### 서비스 개요
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/b743d9f3-5d8f-4cd5-ab96-3eba0b140779/174eff6f-5a71-4ca2-9ee7-533dafecfd3b/Untitled.png)
+![Untitled (8)](https://github.com/24th-conference-TripBeats/modeling/assets/87055003/006c4324-35b9-41ad-af92-f1bcd4dc53ce)
+
+
 
 ### 데이터 수집 과정
 
@@ -93,7 +95,8 @@ TripBeats는 당신의 취향과 선호도에 맞춰 완벽한 여행지를 추�
     
     - FastAPI 서버로부터 받은 인퍼런스 결과를 취합하여 클라이언트에게 응답
         
-        ![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/b743d9f3-5d8f-4cd5-ab96-3eba0b140779/a1102136-4119-430f-8372-97832444fc25/Untitled.png)
+![Untitled (9)](https://github.com/24th-conference-TripBeats/modeling/assets/87055003/628e9752-c8da-40ac-b278-0fc812ea3fec)
+
         
 - **프론트엔드**:
     - React를 기반으로 한 직관적이고 사용하기 쉬운 컴포넌트 구현.
