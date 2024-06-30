@@ -2,7 +2,8 @@
 
 TripBeats는 당신의 취향과 선호도에 맞춰 완벽한 여행지를 추천하고, 그 여행지에 어울리는 음악을 함께 제안하는 개인 맞춤형 사운드 트립 큐레이션 서비스입니다. TripBeats는 AI 기반의 고도화된 분석을 통해 유저의 세분화된 취향을 반영한 여행루트를 제안합니다. 이를 통해 단순한 관광을 넘어서, 진정으로 마음에 드는 나만의 여행루트를 발견하고, 매 순간이 음악과 어우러지는 잊지 못할 여행을 선사하고자 합니다. 
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/b743d9f3-5d8f-4cd5-ab96-3eba0b140779/f8a051e2-478d-4e06-a46a-f9a84cacbfbf/Untitled.png)
+![Untitled (7)](https://github.com/24th-conference-TripBeats/modeling/assets/87055003/3bf6e4f2-3cd4-49e8-8a06-75a182e063e3)
+
 
 ### 목차
 
