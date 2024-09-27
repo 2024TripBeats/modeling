@@ -1,0 +1,8 @@
+faiss_gpu==1.7.2
+fastapi==0.115.0
+numpy==2.1.1
+pandas==2.2.3
+pydantic==2.9.2
+Requests==2.32.3
+scikit_learn==1.5.2
+uvicorn==0.30.6
