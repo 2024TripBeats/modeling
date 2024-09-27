@@ -1,12 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 import pandas as pd
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../models')
-
-from main import main_pipeline
+from models.main import main_pipeline
 import numpy as np
 
 app = FastAPI()
@@ -15,16 +11,34 @@ app = FastAPI()
 class Place(BaseModel):
     placeId: str
     placeName: str
+    category: str
     duration: int
+    order: int
+    new_order: Optional[int]
+    timeOfDay: str
+    music_bool: bool
+    top_musicId: Optional[str]
+    song_title: Optional[str]
+    artist_name: Optional[str]
+    spotify_id: Optional[int]
+    price: int
 
 
 class PlaceMusicPair(BaseModel):
     placeId: str
     placeName: str
-    musicId: int
-    musicName: str
-    musicArtist: str
+    category: str
     duration: int
+    order: int
+    new_order: Optional[int]
+    timeOfDay: str
+    music_bool: bool
+    musicId: Optional[str]
+    musicName: Optional[str]
+    musicArtist: Optional[str]
+    spotify_id: Optional[int]
+    duration: int
+    price: int
 
 
 class TravelSegmentDto(BaseModel):
@@ -37,7 +51,8 @@ class RecommendationCandidateRequestDto(BaseModel):
 
 
 class RecommendationCandidateResponseDto(BaseModel):
-    itinerary: List[PlaceMusicPair]
+    dayNumber: int
+    places: List[PlaceMusicPair]
     travelSegments: List[TravelSegmentDto]
 
 
@@ -48,7 +63,8 @@ class DayRecommendationRequestDto(BaseModel):
 
 class DayRecommendationResponseDto(BaseModel):
     dayNumber: int
-    candidates: List[RecommendationCandidateResponseDto]
+    candidates: int  # Assuming 'candidates' is a count based on the provided JSON
+    itinerary: List[RecommendationCandidateResponseDto]
 
 
 class FinalRecommendationRequestDto(BaseModel):
@@ -92,26 +108,39 @@ async def music_recommend(request: FinalRecommendationRequestDto):
     # Process the result to match the response model
     recommendations = []
     for day in result:
-        day_response = DayRecommendationResponseDto(
+        candidates_count = len(day['candidates'])
+        itinerary = []
+        for candidate in day['candidates']:
+            day_response = RecommendationCandidateResponseDto(
+                dayNumber=day['dayNumber'],
+                places=[
+                    PlaceMusicPair(
+                        placeId=place['placeId'],
+                        placeName=place['placeName'],
+                        category=place['category'],
+                        duration=place['duration'],
+                        order=place['order'],
+                        new_order=place.get('new_order'),
+                        timeOfDay=place['timeOfDay'],
+                        music_bool=place['music_bool'],
+                        musicId=place.get('top_musicId'),
+                        musicName=place.get('song_title'),
+                        musicArtist=place.get('artist_name'),
+                        spotify_id=place.get('spotify_id'),
+                        duration=place['duration'],
+                        price=place['price']
+                    ) for place in candidate['itinerary']
+                ],
+                travelSegments=candidate['travelSegments']
+            )
+            itinerary.append(day_response)
+        
+        day_recommendation = DayRecommendationResponseDto(
             dayNumber=day['dayNumber'],
-            candidates=[
-                RecommendationCandidateResponseDto(
-                    itinerary=[
-                        PlaceMusicPair(
-                            placeId=place['placeId'],
-                            placeName=place['placeName'],
-                            musicId=place['top_musicId'],
-                            musicName=place['song_title'],
-                            musicArtist=place['artist_name'],
-                            duration=place['duration'],
-                            price=place['price']
-                        ) for place in candidate['itinerary']
-                    ],
-                    travelSegments=candidate['travelSegments']
-                ) for candidate in day['candidates']
-            ]
+            candidates=candidates_count,
+            itinerary=itinerary
         )
-        recommendations.append(day_response)
+        recommendations.append(day_recommendation)
 
     response = FinalRecommendationResponseDto(
         recommendations=recommendations
