@@ -1,5 +1,3 @@
-import pandas as pd
-
 # 음악 장르 유사성 사전 (한국어 기준)
 music_genres_similarity = {
     'POP': ['댄스', '록/메탈', 'R&B/Soul', '애시드/퓨전/팝'],

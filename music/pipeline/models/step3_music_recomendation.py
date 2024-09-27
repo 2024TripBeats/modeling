@@ -137,7 +137,7 @@ def add_song_details(trip_data, music_hashtags_data):
     return trip_data
 
 def reorder_place_keys(trip_data):
-    ordered_keys = ['placeName', 'order', 'category', 'placeId', 'new_order', 'timeOfDay', 'music_bool', 'top_musicId', 'song_title', 'artist_name', 'spotify_id']
+    ordered_keys = ['placeName', 'order', 'category', 'placeId', 'new_order', 'timeOfDay', 'music_bool', 'top_musicId', 'song_title', 'artist_name', 'spotify_id', 'duration', 'price']
     
     for entry in trip_data:
         for recommendation in entry['recommendations']:
