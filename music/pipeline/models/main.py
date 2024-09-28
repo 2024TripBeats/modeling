@@ -4,7 +4,13 @@ from step1_genre_selection import process_genre_selection, filter_data_by_genre
 from step2_style_selection import process_style_selection, intersection_of_results
 from step3_music_recomendation import categorize_places_by_time, get_music_scores, set_top_music, add_song_details, reorder_place_keys
 
-def main_pipeline(genre_selection, genre_openess, style_selection, style_openess, trip_data, music_hashtags_data, csv_paths):
+"""
+여기 변경
+"""
+def main_pipeline(genre_selection, genre_openess, style_selection, style_openess, trip_data, music_hashtags_data, csv_paths, music_embeddings, user_preferences_embeddings):
+    """
+    여기 변경
+    """
     # Step 1: 장르 선택
     final_genre_selection = process_genre_selection(genre_selection, genre_openess)
     genre_filtered_data = filter_data_by_genre(final_genre_selection, music_hashtags_data)
@@ -39,7 +45,7 @@ if __name__ == "__main__":
                             "places": [
                                 {
                                     "placeId": "CONT_000000000500349",
-                                    "placeName": "성산일출봉",
+                                    "placeName": "헬로키티아일랜드",
                                     "category": "관광지",
                                     "duration": 120,
                                     "order": 1,
@@ -47,7 +53,7 @@ if __name__ == "__main__":
                                 },
                                 {
                                     "placeId": "CONT_000000000500477",
-                                    "placeName": "Gyeongbokgung Palace",
+                                    "placeName": "천지연폭포",
                                     "category": "역사 유적지",
                                     "duration": 120,
                                     "order": 2,
@@ -65,7 +71,7 @@ if __name__ == "__main__":
                             "places": [
                                 {
                                     "placeId": "CONT_000000000500477",
-                                    "placeName": "Bukchon Hanok Village",
+                                    "placeName": "성산일출봉",
                                     "category": "전통 마을",
                                     "duration": 120,
                                     "order": 1,
@@ -73,7 +79,7 @@ if __name__ == "__main__":
                                 },
                                 {
                                     "placeId": "CONT_000000000500477",
-                                    "placeName": "Dongdaemun Design Plaza",
+                                    "placeName": "거문오름",
                                     "category": "문화시설",
                                     "duration": 120,
                                     "order": 2,
@@ -187,14 +193,20 @@ if __name__ == "__main__":
     ]
 
     csv_paths = {
-        '아침': '/root/TripBeats_modeling-repo/music/pipeline/data/morning_score_id.csv',
-        '오후': '/root/TripBeats_modeling-repo/music/pipeline/data/afternoon_score_id.csv',
-        '밤': '/root/TripBeats_modeling-repo/music/pipeline/data/night_score_id.csv'
+        '아침': '/root/tripbeats/music/pipeline/data/morning_score_id.csv',
+        '오후': '/root/tripbeats/music/pipeline/data/afternoon_score_id.csv',
+        '밤': '/root/tripbeats/music/pipeline/data/night_score_id.csv'
     }
 
-    music_embeddings = np.load('/root/TripBeats_modeling-repo/music/pipeline/data/music_embeddings.npy') 
-    user_preferences_embeddings = np.load('/root/TripBeats_modeling-repo/music/pipeline/data/average_embeddings.npy', allow_pickle=True)
-    music_hashtags_data = pd.read_csv('/root/TripBeats_modeling-repo/music/pipeline/data/music_recommendation_list.csv')
-    
-    result = main_pipeline(genre_selection, genre_openess, style_selection, style_openess, trip_data, music_hashtags_data, csv_paths)
+    music_embeddings = np.load('/root/tripbeats/music/pipeline/data/music_embeddings.npy') 
+    user_preferences_embeddings = np.load('/root/tripbeats/music/pipeline/data/average_embeddings.npy', allow_pickle=True)
+    music_hashtags_data = pd.read_csv('/root/tripbeats/music/pipeline/data/music_recommendation_list.csv')
+
+    """
+    여기 변경
+    """
+    result = main_pipeline(genre_selection, genre_openess, style_selection, style_openess, trip_data, music_hashtags_data, csv_paths, music_embeddings, user_preferences_embeddings)
     print(result)
+    """
+    여기 변경
+    """
