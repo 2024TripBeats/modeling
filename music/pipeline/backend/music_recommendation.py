@@ -85,13 +85,6 @@ async def music_recommend(request: FinalRecommendationRequestDto):
     print("Received request:")
     print(request)
 
-    # Extract necessary data from the request
-    genre_selection = request.musicGenres
-    genre_openess = request.genreOpenness
-    style_selection = request.musicTags
-    style_openess = request.tagOpenness
-    trip_data = request.recommendations
-
     # Load additional data required by main_pipeline
     csv_paths = {
         '아침': '/root/TripBeats_modeling-repo/music/pipeline/data/morning_score_id.csv',
@@ -106,7 +99,7 @@ async def music_recommend(request: FinalRecommendationRequestDto):
     """
     여기 변경
     """
-    result = main_pipeline(genre_selection, genre_openess, style_selection, style_openess, trip_data, music_hashtags_data, csv_paths, music_embeddings, user_preferences_embeddings)
+    result = main_pipeline(request, music_hashtags_data, csv_paths, music_embeddings, user_preferences_embeddings)
     """
     여기 변경
     """
