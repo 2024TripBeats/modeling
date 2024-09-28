@@ -103,8 +103,13 @@ async def music_recommend(request: FinalRecommendationRequestDto):
     music_hashtags_data = pd.read_csv('/root/TripBeats_modeling-repo/music/pipeline/data/music_recommendation_list.csv')
 
     # Call the main_pipeline function
-    result = main_pipeline(genre_selection, genre_openess, style_selection, style_openess, trip_data, music_hashtags_data, csv_paths)
-
+    """
+    여기 변경
+    """
+    result = main_pipeline(genre_selection, genre_openess, style_selection, style_openess, trip_data, music_hashtags_data, csv_paths, music_embeddings, user_preferences_embeddings)
+    """
+    여기 변경
+    """
     # Process the result to match the response model
     recommendations = []
     for day in result:
