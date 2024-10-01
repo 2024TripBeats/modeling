@@ -16,6 +16,7 @@ from pycaret.regression import predict_model
 
 
 def combined_recommendation(input_order, similarity_df, trip_df, model, master_visit_all, user_prefer, user_features):
+
     model = joblib.load(model)
     common_index = similarity_df.index.intersection(trip_df.index)
     trip_df = trip_df.loc[common_index]
