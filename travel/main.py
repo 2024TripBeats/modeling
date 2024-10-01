@@ -24,12 +24,12 @@ from course import (
     determine_start_time,
     generate_day_plan,
     generate_recommendation,
-    force_add_restaurant
+    force_add_restaurant,
     format_itinerary
 )
 
 
-
+'''
 df_tr = pd.read_csv(r"C:\Users\김소민\Desktop\사문\kakao\df.csv")
 df_ca =  pd.read_csv(r"C:\Users\김소민\Desktop\사문\kakao\restaurant_df.csv")
 df_re = pd.read_csv(r"C:\Users\김소민\Desktop\사문\kakao\cafe_df.csv")
@@ -75,25 +75,16 @@ user_trip_days = 3  # 2박 3일
 user_difficulty = [3, 4, 2]  # 각 날짜별 난이도
 user_openness = 2  # 개방도 (1~5)
 start_time = '오전'  # 여행 시작 시간 (오전 9시)
-  # 여행 종료 제한 시간 (밤 10시)
-  # 여행지 간 최대 거리 (KM)
- # 하루 최대 여행지 수
+'''
 
 def main(user_prefer,rest_survey, df_re,df_ca,df_ac,input_order, sim_df, df_tr, model_path, master_visit_all, user_features, user_trip_days, user_difficult):
   rest_df = restaurants_recomm(df_re, rest_survey)
   cafe_df = cafe_recomm(rest_survey, df_ca)
-  acco_df = rank_accommodation(df_ac,acc_prefer)
+  acco_df = rank_accommodation(acc_prefer,df_ac)
   end_time = '22:00:00'
   max_travel_distance = 10
   max_daily_places = 4 
-  # 난이도 맵핑 (예시)
-  difficulty_map = {
-      '자연관광지': 2,
-      '역사유적지': 2,
-      '문화시설': 1,
-      '테마파크': 6,
-      '레저스포츠': 6
-  }
+  
   trip_df = combined_recommendation(input_order, sim_df, df_tr, model_path, master_visit_all, user_prefer, user_features)
   recommendation_result = generate_recommendation(rest_df, cafe_df, acco_df, trip_df, user_trip_days, user_difficulty, start_time_option)
   return recommendation_result

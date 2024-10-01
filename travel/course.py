@@ -66,6 +66,13 @@ def select_cafe(cafe_df, last_place, visited_places, max_distance):
 
 # 관광지 선택 함수
 def select_tourist_place(trip_df, last_place, visited_places, max_distance, user_difficulty, total_difficulty, day_categories, candidate_categories):
+    difficulty_map = {
+      '자연관광지': 2,
+      '역사유적지': 2,
+      '문화시설': 1,
+      '테마파크': 6,
+      '레저스포츠': 6
+  }
     for _, place in trip_df.iterrows():
         if get_coordinates(place) is None:
             continue
