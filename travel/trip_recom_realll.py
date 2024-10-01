@@ -114,17 +114,3 @@ def combined_recommendation(input_order, similarity_df, trip_df, model, master_v
     final_recommendations_df = combined_df.rename(columns={'Combined_weighted_similarity': 'score'}).sort_values(by='score', ascending=False)
 
     return final_recommendations_df
-
-user_features = {
-    'GENDER': [1],
-    'AGE_GRP': [20],
-    'TRAVEL_STYL_1': [2],
-    'TRAVEL_STYL_2': [2],
-    'TRAVEL_STYL_3': [2],
-    'TRAVEL_STYL_4': [2]
-}
-
-input_order = [2, 4, 3, 1, 5]
-user_prefer = ['역사유적지']
-
-combined_recommendation(input_order, similarity_df, trip_df, model, master_visit_all, user_prefer, user_features)

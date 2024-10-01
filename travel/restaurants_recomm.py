@@ -36,19 +36,3 @@ def restaurants_recomm(df, data):
 
     return df_sorted
 
-# 예시 사용법
-data = {
-    "restaurant": [
-        "로컬 맛집",
-        "뷰가 좋은"
-    ],
-    "requiredRestText": "삼계탕",
-    "cafe": [
-        "가성비"
-    ]
-}
-
-# df_re_matched가 식당 데이터프레임이라고 가정
-df_result = restaurants_recomm(df_re_matched, data)
-
-display(df_result)

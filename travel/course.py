@@ -293,10 +293,11 @@ def generate_recommendation(restaurant_df, cafe_df, accommodation_df, trip_df, u
         candidates.append({"candidates": candidate_num + 1, "itinerary": formatted_itinerary})
 
     return {"recommendations": candidates}
-# 실행 예시
+'''
 start_time_option = "오전"  # "오전", "오후", "밤" 중 선택
 recommendation_result = generate_recommendation(df_re, df_ca, df_ac, trip_df, user_trip_days, user_difficulty, start_time_option)
 
 # 결과 출력
 print(json.dumps(recommendation_result, indent=4, ensure_ascii=False))
 # 실행 예시
+'''

@@ -51,6 +51,7 @@ def rank_accommodation(user_prefer, acco_df):
 
     return acco_df
 
+'''
 
 user_prefer = {"accomodation": [
     "주차시설",
@@ -61,3 +62,4 @@ user_prefer = {"accomodation": [
 "accompriority": "좋은 품질"}
 ranked_df = rank_accommodation(user_prefer, acco_df)
 display(ranked_df)
+'''

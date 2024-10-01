@@ -26,20 +26,4 @@ def cafe_recomm(df, data):
 
     return df_sorted
 
-# 예시 사용법
-data = {
-    "restaurant": [ 
-        "로컬 맛집",
-        "뷰가 좋은"
-    ],
-    "requiredRestText": "순대, 떡볶이",
-    "cafe": [
-        "가성비"
-    ] 
-}
 
-# df_re_matched가 카페 데이터프레임이라고 가정
-df_result = cafe_recomm(df_re_matched, data)
-
-# 결과 출력
-print(df_result)
