@@ -82,7 +82,7 @@ start_time = '오전'  # 여행 시작 시간 (오전 9시)
 def main(user_prefer,rest_survey, df_re,df_ca,df_ac,input_order, sim_df, df_tr, model_path, master_visit_all, user_features, user_trip_days, user_difficult):
   rest_df = restaurants_recomm(df_re, rest_survey)
   cafe_df = cafe_recomm(rest_survey, df_ca)
-  acco_df = rank_accommodation(df_ac,acc_prefer)
+  acco_df = rank_accommodation(acc_prefer,df_ac)
   end_time = '22:00:00'
   max_travel_distance = 10
   max_daily_places = 4 
