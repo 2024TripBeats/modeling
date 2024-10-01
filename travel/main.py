@@ -79,17 +79,7 @@ start_time = '오전'  # 여행 시작 시간 (오전 9시)
   # 여행지 간 최대 거리 (KM)
  # 하루 최대 여행지 수
 
-end_time = '22:00:00'
-max_travel_distance = 10
-max_daily_places = 4 
-# 난이도 맵핑 (예시)
-difficulty_map = {
-    '자연관광지': 2,
-    '역사유적지': 2,
-    '문화시설': 1,
-    '테마파크': 6,
-    '레저스포츠': 6
-}
+
 
 def main(user_prefer,rest_survey, df_re,df_ca,df_ac,input_order, sim_df, df_tr, model_path, master_visit_all, user_features, user_trip_days, user_difficulty):
   rest_df = restaurants_recomm(df_re, rest_survey)
