@@ -27,7 +27,7 @@ from course import (
     force_add_restaurant
     format_itinerary
 )
-from travel/trip_recom_2 import combined_recommendation
+
 
 
 df_tr = pd.read_csv(r"C:\Users\김소민\Desktop\사문\kakao\df.csv")
