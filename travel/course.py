@@ -265,7 +265,6 @@ def format_itinerary(itinerary):
     return formatted_itinerary
 
 
-
 def generate_recommendation(restaurant_df, cafe_df, accommodation_df, trip_df, user_trip_days, user_difficulty, start_time_option):
     visited_places = set()
     candidates = []
