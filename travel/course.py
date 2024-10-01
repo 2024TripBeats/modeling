@@ -26,7 +26,12 @@ max_daily_places = 4  # 하루 최대 여행지 수
 
 
 
-#코드 
+from datetime import datetime, timedelta, time
+from geopy.distance import geodesic
+import random
+import pandas as pd
+import json
+
 def calculate_distance(place1, place2):
     coords_1 = get_coordinates(place1)
     coords_2 = get_coordinates(place2)
@@ -57,66 +62,61 @@ def is_within_distance(last_place, new_place, max_distance):
     distance = calculate_distance(last_place, new_place)
     return distance <= max_distance
 
+# 식당 선택 함수
 def select_restaurant(restaurant_df, last_place, visited_places, max_distance):
-    for _, restaurant in restaurant_df.iterrows():
+    sorted_restaurants = restaurant_df.sort_index()
+    for _, restaurant in sorted_restaurants.iterrows():
         if get_coordinates(restaurant) is None:
             continue
         if restaurant['id'] not in visited_places and is_within_distance(last_place, restaurant, max_distance):
             return restaurant
     return None
 
+# 카페 선택 함수
 def select_cafe(cafe_df, last_place, visited_places, max_distance):
-    for _, cafe in cafe_df.iterrows():
+    sorted_cafes = cafe_df.sort_index()
+    for _, cafe in sorted_cafes.iterrows():
         if get_coordinates(cafe) is None:
             continue
         if cafe['id'] not in visited_places and is_within_distance(last_place, cafe, max_distance):
             return cafe
     return None
 
-def select_tourist_place(trip_df, last_place, visited_places, max_distance, user_difficulty, total_difficulty, categories):
+# 관광지 선택 함수
+def select_tourist_place(trip_df, last_place, visited_places, max_distance, user_difficulty, total_difficulty, day_categories, candidate_categories):
     for _, place in trip_df.iterrows():
         if get_coordinates(place) is None:
             continue
         if place['tourist_id'] not in visited_places and is_within_distance(last_place, place, max_distance):
             difficulty = difficulty_map.get(place['category'], 0)
-            if total_difficulty + difficulty <= user_difficulty and place['category'] not in categories:
+            if total_difficulty + difficulty <= user_difficulty and place['category'] not in day_categories:
+                # Prioritize categories not yet visited in the entire itinerary
+                if place['category'] not in candidate_categories:
+                    return place, difficulty
+    
+    # If all categories have been visited, select any place that fits the criteria
+    for _, place in trip_df.iterrows():
+        if get_coordinates(place) is None:
+            continue
+        if place['tourist_id'] not in visited_places and is_within_distance(last_place, place, max_distance):
+            difficulty = difficulty_map.get(place['category'], 0)
+            if total_difficulty + difficulty <= user_difficulty and place['category'] not in day_categories:
                 return place, difficulty
+    
     return None, 0
 
-from datetime import datetime, timedelta, time
 
-# 첫째날 시작 시간 결정 함수
-def determine_start_time(first_day_start):
-    if first_day_start == '오전':
-        return datetime.strptime("09:00:00", "%H:%M:%S")
-    elif first_day_start == '오후':
-        return datetime.strptime("14:00:00", "%H:%M:%S")
-    elif first_day_start == '밤':
-        return datetime.strptime("22:00:00", "%H:%M:%S")
-
-# 하루 일정 생성 함수 (첫째날 특수 처리 포함)
-# 하루 일정 생성 함수 (첫째날 특수 처리 포함)
-def generate_day_plan(restaurant_df, cafe_df, trip_df, start_datetime, end_time, user_difficulty, visited_places, cafes_added, current_accommodation, max_travel_distance, max_daily_places, is_first_day=False, first_day_start='오전'):
+def generate_day_plan(restaurant_df, cafe_df, trip_df, start_datetime, end_time, user_difficulty, visited_places, cafes_added, current_accommodation, candidate_categories):
     selected_places = []
     total_difficulty = 0
     current_time = start_datetime
     last_place_type = None
+    max_travel_distance = 20
+    max_daily_places = 6
     tourist_places_added = 0
-    categories = set()
-
-    # 두 번의 식사 타임 플래그
-    lunch_added = False
-    dinner_added = False
-
-    # 첫째날 밤인 경우 숙소 하나만 추천
-    if is_first_day and first_day_start == '밤':
-        selected_places.append({
-            'place': current_accommodation,
-            'type': '숙소',
-            'duration': 0
-        })
-        visited_places.add(current_accommodation['id'])
-        return selected_places, cafes_added
+    day_categories = set()
+    lunch_added = False  # Initialize lunch_added
+    dinner_added = False  # Initialize dinner_added
 
     # 숙소 추가
     selected_places.append({
@@ -129,61 +129,62 @@ def generate_day_plan(restaurant_df, cafe_df, trip_df, start_datetime, end_time,
     last_place_type = '숙소'
     current_time += timedelta(hours=1)
 
-    while len(selected_places) < max_daily_places and current_time < datetime.combine(current_time.date(), datetime.strptime(end_time, "%H:%M:%S").time()):
-        # 11:00-13:00에 점심 식당 추천
+    end_datetime = datetime.combine(current_time.date(), datetime.strptime(end_time, "%H:%M:%S").time())
+
+    while len(selected_places) < max_daily_places and current_time < end_datetime:
+        # 점심 시간 체크 및 식당 추가
         if 11 <= current_time.hour < 13 and not lunch_added:
             restaurant = select_restaurant(restaurant_df, last_place, visited_places, max_travel_distance)
             if restaurant is not None:
                 selected_places.append({
                     'place': restaurant,
-                    'type': '식당',
+                    'type': '식당 (점심)',
                     'duration': 1.5
                 })
                 visited_places.add(restaurant['id'])
                 last_place = restaurant
                 last_place_type = '식당'
                 current_time += timedelta(hours=1.5)
-                lunch_added = True  # 점심 추가 완료 플래그
+                lunch_added = True
                 continue
 
-        # 17:00-20:00에 저녁 식당 추천
+        # 저녁 시간 체크 및 식당 추가
         if 17 <= current_time.hour < 20 and not dinner_added:
             restaurant = select_restaurant(restaurant_df, last_place, visited_places, max_travel_distance)
             if restaurant is not None:
                 selected_places.append({
                     'place': restaurant,
-                    'type': '식당',
+                    'type': '식당 (저녁)',
                     'duration': 1.5
                 })
                 visited_places.add(restaurant['id'])
                 last_place = restaurant
                 last_place_type = '식당'
                 current_time += timedelta(hours=1.5)
-                dinner_added = True  # 저녁 추가 완료 플래그
+                dinner_added = True
                 continue
 
-        # 관광지 추가 (거리 및 시간 준수)
+        # 관광지 추가
         if tourist_places_added < 4:
-            tourist_place, difficulty = select_tourist_place(trip_df, last_place, visited_places, max_travel_distance, user_difficulty, total_difficulty, categories)
+            tourist_place, difficulty = select_tourist_place(trip_df, last_place, visited_places, max_travel_distance, user_difficulty, total_difficulty, day_categories, candidate_categories)
             if tourist_place is not None:
-                travel_time = timedelta(hours=tourist_place['평균 소요 시간'])
-                if current_time + travel_time <= datetime.combine(current_time.date(), datetime.strptime(end_time, "%H:%M:%S").time()) and calculate_distance(last_place, tourist_place) <= max_travel_distance:
-                    selected_places.append({
-                        'place': tourist_place,
-                        'type': tourist_place['category'],
-                        'duration': tourist_place['평균 소요 시간']
-                    })
-                    visited_places.add(tourist_place['tourist_id'])
-                    last_place = tourist_place
-                    last_place_type = '관광지'
-                    current_time += travel_time
-                    total_difficulty += difficulty
-                    tourist_places_added += 1
-                    categories.add(tourist_place['category'])
-                    continue
+                selected_places.append({
+                    'place': tourist_place,
+                    'type': tourist_place['category'],
+                    'duration': tourist_place['평균 소요 시간']
+                })
+                visited_places.add(tourist_place['tourist_id'])
+                last_place = tourist_place
+                last_place_type = '관광지'
+                current_time += timedelta(hours=tourist_place['평균 소요 시간'])
+                total_difficulty += difficulty
+                tourist_places_added += 1
+                day_categories.add(tourist_place['category'])
+                candidate_categories.add(tourist_place['category'])
+                continue
 
         # 카페 추가
-        if cafes_added < 2 and last_place_type != '식당' and random.random() < 0.5:
+        if cafes_added < 2 and last_place_type != '카페' and last_place_type != '식당' and random.random() < 0.5:
             cafe = select_cafe(cafe_df, last_place, visited_places, max_travel_distance)
             if cafe is not None:
                 selected_places.append({
@@ -198,31 +199,8 @@ def generate_day_plan(restaurant_df, cafe_df, trip_df, start_datetime, end_time,
                 cafes_added += 1
                 continue
 
-        # 더 이상 추가할 장소가 없으면 반복 종료
-        break
-
-    # 만약 점심 또는 저녁이 추천되지 않았을 경우 강제로 추가
-    if not lunch_added and current_time < datetime.combine(current_time.date(), time(13, 0)):
-        restaurant = select_restaurant(restaurant_df, last_place, visited_places, max_travel_distance)
-        if restaurant is not None:
-            selected_places.append({
-                'place': restaurant,
-                'type': '식당',
-                'duration': 1.5
-            })
-            visited_places.add(restaurant['id'])
-            current_time += timedelta(hours=1.5)
-    
-    if not dinner_added and current_time < datetime.combine(current_time.date(), time(20, 0)):
-        restaurant = select_restaurant(restaurant_df, last_place, visited_places, max_travel_distance)
-        if restaurant is not None:
-            selected_places.append({
-                'place': restaurant,
-                'type': '식당',
-                'duration': 1.5
-            })
-            visited_places.add(restaurant['id'])
-            current_time += timedelta(hours=1.5)
+        # 시간이 남았지만 더 이상 추가할 장소가 없으면 시간 진행
+        current_time += timedelta(hours=0.5)
 
     # 마지막 숙소 추가
     selected_places.append({
@@ -233,45 +211,92 @@ def generate_day_plan(restaurant_df, cafe_df, trip_df, start_datetime, end_time,
 
     return selected_places, cafes_added
 
-# 전체 추천 일정 생성
-def generate_recommendation(restaurant_df, cafe_df, accommodation_df, trip_df, user_trip_days, user_difficulty, user_openness, first_day_start):
+def force_add_restaurant(selected_places, restaurant_df, last_place, visited_places, max_travel_distance, meal_type):
+    restaurant = select_restaurant(restaurant_df, last_place, visited_places, max_travel_distance)
+    if restaurant is not None:
+        selected_places.append({
+            'place': restaurant,
+            'type': f'식당 ({meal_type})',
+            'duration': 1.5
+        })
+        visited_places.add(restaurant['id'])
+
+def format_itinerary(itinerary):
+    formatted_itinerary = []
+    for day_number, day_plan in enumerate(itinerary, 1):
+        if not day_plan:
+            continue
+        places = []
+        travel_segments = []
+        last_place = None
+        for order, place in enumerate(day_plan, 1):
+            place_info = {
+                "placeId": str(place['place'].get('id') or place['place'].get('tourist_id')),
+                "placeName": get_place_name(place['place']),
+                "category": place['type'],
+                "duration": int(place['duration'] * 60),
+                "order": order,
+                "price": place['place'].get('요금 정보', 0)
+            }
+            places.append(place_info)
+            if last_place is not None:
+                distance = calculate_distance(last_place, place['place'])
+                travel_segments.append({"distance": round(distance, 1)})
+            last_place = place['place']
+        formatted_itinerary.append({
+            "dayNumber": day_number,
+            "places": places,
+            "travelSegments": travel_segments
+        })
+    return formatted_itinerary
+
+def generate_recommendation(restaurant_df, cafe_df, accommodation_df, trip_df, user_trip_days, user_difficulty, start_time_option):
     visited_places = set()
     candidates = []
+    
+    # 시작 시간 설정
+    start_time_map = {"오전": "10:00:00", "오후": "14:00:00", "밤": "22:00:00"}
+    first_day_start_time = start_time_map[start_time_option]
 
     for candidate_num in range(2):
         itinerary = []
         cafes_added = 0
-
+        candidate_categories = set()  # 각 후보에 대한 카테고리 집합 초기화
+        
         # 데이터프레임 셔플
         restaurant_df = restaurant_df.sample(frac=1).reset_index(drop=True)
         cafe_df = cafe_df.sample(frac=1).reset_index(drop=True)
         trip_df = trip_df.sample(frac=1).reset_index(drop=True)
-
         current_accommodation = accommodation_df.iloc[candidate_num % len(accommodation_df)]
 
         for day in range(user_trip_days):
-            if day == 0:  # 첫째날 처리
-                start_datetime = determine_start_time(first_day_start)
-                if first_day_start == '밤':
-                    day_plan, cafes_added = generate_day_plan(restaurant_df, cafe_df, trip_df, start_datetime, end_time, user_difficulty[day], visited_places, cafes_added, current_accommodation, max_travel_distance, max_daily_places, is_first_day=True, first_day_start=first_day_start)
-                else:
-                    day_plan, cafes_added = generate_day_plan(restaurant_df, cafe_df, trip_df, start_datetime, end_time, user_difficulty[day], visited_places, cafes_added, current_accommodation, max_travel_distance, max_daily_places, is_first_day=True)
-            else:  # 둘째날 이후 처리
-                start_datetime = datetime.strptime("09:00:00", "%H:%M:%S")  # 고정된 9시 시작 시간
-                day_plan, cafes_added = generate_day_plan(restaurant_df, cafe_df, trip_df, start_datetime, end_time, user_difficulty[day], visited_places, cafes_added, current_accommodation, max_travel_distance, max_daily_places)
-
+            if day == 0:
+                start_datetime = datetime.strptime(first_day_start_time, "%H:%M:%S")
+            else:
+                start_datetime = datetime.strptime("09:00:00", "%H:%M:%S")
+            
+            end_time = "22:00:00"
+            
+            # 첫째 날이 밤인 경우 숙소만 추천
+            if day == 0 and start_time_option == "밤":
+                day_plan = [{
+                    'place': current_accommodation,
+                    'type': '숙소',
+                    'duration': 0
+                }]
+            else:
+                day_plan, cafes_added = generate_day_plan(restaurant_df, cafe_df, trip_df, start_datetime, end_time, user_difficulty[day], visited_places, cafes_added, current_accommodation, candidate_categories)
+            
             itinerary.append(day_plan)
 
         formatted_itinerary = format_itinerary(itinerary)
         candidates.append({"candidates": candidate_num + 1, "itinerary": formatted_itinerary})
 
     return {"recommendations": candidates}
-
-
-#화룡 예시]
-recommendation_result = generate_recommendation(df_re, df_ca, df_ac, trip_df, user_trip_days, user_difficulty)
+# 실행 예시
+start_time_option = "오전"  # "오전", "오후", "밤" 중 선택
+recommendation_result = generate_recommendation(df_re, df_ca, df_ac, trip_df, user_trip_days, user_difficulty, start_time_option)
 
 # 결과 출력
-import json
-print(json.dumps(recommendation_result, indent=4, ensure_ascii=False)
-
+print(json.dumps(recommendation_result, indent=4, ensure_ascii=False))
+# 실행 예시
