@@ -29,14 +29,14 @@ from course import (
 )
 
 
-'''
-df_tr = pd.read_csv(r"C:\Users\김소민\Desktop\사문\kakao\df.csv")
-df_ca =  pd.read_csv(r"C:\Users\김소민\Desktop\사문\kakao\restaurant_df.csv")
-df_re = pd.read_csv(r"C:\Users\김소민\Desktop\사문\kakao\cafe_df.csv")
-df_ac = pd.read_csv(r"C:\Users\김소민\Desktop\사문\kakao\숙박_처리완.csv")
-sim_df = pd.read_csv('/content/similarity_df.csv')
-master_visit_all = pd.read_csv('/content/master_visit_all.csv')
-model_path = '/content/bayesian_regression.pkl'
+
+df_tr = pd.read_csv("/root/TripBeats_modeling-repo/travel/trip_df_final_v3.csv")
+df_ca =  pd.read_csv("/root/TripBeats_modeling-repo/travel/cafe_df.csv")
+df_re = pd.read_csv("/root/TripBeats_modeling-repo/travel/restaurant_df.csv")
+df_ac = pd.read_csv("/root/TripBeats_modeling-repo/travel/accom_Df.csv")
+sim_df = pd.read_csv('/root/TripBeats_modeling-repo/travel/similarity_df.csv')
+master_visit_all = pd.read_csv('/root/TripBeats_modeling-repo/travel/master_visit_all.csv')
+model_path = '/root/TripBeats_modeling-repo/travel/bayesian_regression.pkl'
 
 
 #restaurant recomm
@@ -75,17 +75,32 @@ user_trip_days = 3  # 2박 3일
 user_difficulty = [3, 4, 2]  # 각 날짜별 난이도
 user_openness = 2  # 개방도 (1~5)
 start_time = '오전'  # 여행 시작 시간 (오전 9시)
-'''
+  # 여행 종료 제한 시간 (밤 10시)
+  # 여행지 간 최대 거리 (KM)
+ # 하루 최대 여행지 수
 
-def main(user_prefer,rest_survey, df_re,df_ca,df_ac,input_order, sim_df, df_tr, model_path, master_visit_all, user_features, user_trip_days, user_difficult):
+end_time = '22:00:00'
+max_travel_distance = 10
+max_daily_places = 4 
+# 난이도 맵핑 (예시)
+difficulty_map = {
+    '자연관광지': 2,
+    '역사유적지': 2,
+    '문화시설': 1,
+    '테마파크': 6,
+    '레저스포츠': 6
+}
+
+def main(user_prefer,rest_survey, df_re,df_ca,df_ac,input_order, sim_df, df_tr, model_path, master_visit_all, user_features, user_trip_days, user_difficulty):
   rest_df = restaurants_recomm(df_re, rest_survey)
-  cafe_df = cafe_recomm(rest_survey, df_ca)
-  acco_df = rank_accommodation(acc_prefer,df_ac)
-  end_time = '22:00:00'
-  max_travel_distance = 10
-  max_daily_places = 4 
-  
+  cafe_df = cafe_recomm(df_ca, rest_survey)
+  acco_df = rank_accommodation(acc_prefer, df_ac)
+
   trip_df = combined_recommendation(input_order, sim_df, df_tr, model_path, master_visit_all, user_prefer, user_features)
-  recommendation_result = generate_recommendation(rest_df, cafe_df, acco_df, trip_df, user_trip_days, user_difficulty, start_time_option)
+  recommendation_result = generate_recommendation(rest_df, cafe_df, acco_df, trip_df, user_trip_days, user_difficulty, start_time)
   return recommendation_result
 
+
+# 예시 호출
+recommendation_result = main(user_prefer, rest_survey, df_re, df_ca, df_ac, input_order, sim_df, df_tr, model_path, master_visit_all, user_features, user_trip_days, user_difficulty)
+print(recommendation_result)
