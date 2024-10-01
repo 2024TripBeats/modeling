@@ -104,12 +104,22 @@ def determine_start_time(first_day_start):
         return datetime.strptime("22:00:00", "%H:%M:%S")
 
 def generate_day_plan(restaurant_df, cafe_df, trip_df, start_datetime, end_time, user_difficulty, visited_places, cafes_added, current_accommodation, candidate_categories):
+    end_time = '22:00:00'
+    
+    
+    difficulty_map = {
+        '자연관광지': 2,
+        '역사유적지': 2,
+        '문화시설': 1,
+        '테마파크': 6,
+        '레저스포츠': 6
+    }
     selected_places = []
     total_difficulty = 0
     current_time = start_datetime
     last_place_type = None
     max_travel_distance = 20
-    max_daily_places = 6
+    max_daily_places = 4
     tourist_places_added = 0
     day_categories = set()
     lunch_added = False  # Initialize lunch_added
