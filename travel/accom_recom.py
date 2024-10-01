@@ -63,3 +63,16 @@ user_prefer = {"accomodation": [
 ranked_df = rank_accommodation(user_prefer, acco_df)
 display(ranked_df)
 '''
+
+'''
+
+user_prefer = {"accomodation": [
+    "주차시설",
+    "20평 ~ 10평",
+    "조리 가능"
+],
+"requiredAccomText": '',
+"accompriority": "좋은 품질"}
+ranked_df = rank_accommodation(user_prefer, acco_df)
+display(ranked_df)
+'''
