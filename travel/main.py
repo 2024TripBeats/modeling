@@ -12,6 +12,7 @@ from pycaret.regression import predict_model
 from restaurants_recomm import restaurants_recomm
 from cafe_recomm import cafe_recomm
 from accom_recom import rank_accommodation
+from trip_recom_realll import combined_recommendation
 from course import (
     calculate_distance,
     get_coordinates,
@@ -22,7 +23,9 @@ from course import (
     select_tourist_place,
     determine_start_time,
     generate_day_plan,
-    generate_recommendation
+    generate_recommendation,
+    force_add_restaurant
+    format_itinerary
 )
 from travel/trip_recom_2 import combined_recommendation
 
