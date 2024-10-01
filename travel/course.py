@@ -73,6 +73,7 @@ def select_tourist_place(trip_df, last_place, visited_places, max_distance, user
       '테마파크': 6,
       '레저스포츠': 6
   }
+    
     for _, place in trip_df.iterrows():
         if get_coordinates(place) is None:
             continue
@@ -218,6 +219,14 @@ def force_add_restaurant(selected_places, restaurant_df, last_place, visited_pla
         visited_places.add(restaurant['id'])
 
 def format_itinerary(itinerary):
+    def extract_price_from_text(text):
+        if isinstance(text, str):
+            match = re.search(r'\d+(\.\d+)?', text.replace(',', ''))
+            if match:
+                price = float(match.group())  # 첫 번째 숫자를 소수점 포함해 추출
+                return round(price)  # 소수점 반올림
+        return 0
+    
     formatted_itinerary = []
     for day_number, day_plan in enumerate(itinerary, 1):
         if not day_plan:
@@ -225,14 +234,23 @@ def format_itinerary(itinerary):
         places = []
         travel_segments = []
         last_place = None
-        for order, place in enumerate(day_plan, 1):
+        for order, place in enumerate(day_plan, 1):  # 수정된 부분
+            # 요금 정보에서 숫자를 추출
+            price_info = place['place'].get('요금 정보')
+            price = extract_price_from_text(price_info)
+            
+            # 요금 정보에 숫자가 없을 경우 '비수기주말최소' 값을 가져옴
+            if price == 0:
+                price = place['place'].get('비수기주말최소', 0) 
+                price =  round(price)# '비수기주말최소'가 없으면 0 반환
+
             place_info = {
                 "placeId": str(place['place'].get('id') or place['place'].get('tourist_id')),
                 "placeName": get_place_name(place['place']),
                 "category": place['type'],
                 "duration": int(place['duration'] * 60),
                 "order": order,
-                "price": place['place'].get('요금 정보', 0)
+                "price": price
             }
             places.append(place_info)
             if last_place is not None:
@@ -245,6 +263,7 @@ def format_itinerary(itinerary):
             "travelSegments": travel_segments
         })
     return formatted_itinerary
+
 
 
 def generate_recommendation(restaurant_df, cafe_df, accommodation_df, trip_df, user_trip_days, user_difficulty, start_time_option):
