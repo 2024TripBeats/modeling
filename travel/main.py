@@ -24,7 +24,7 @@ from course import (
     determine_start_time,
     generate_day_plan,
     generate_recommendation,
-    force_add_restaurant
+    force_add_restaurant,
     format_itinerary
 )
 
