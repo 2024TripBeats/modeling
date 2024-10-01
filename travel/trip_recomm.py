@@ -39,7 +39,7 @@ def trip_recomm(input_order, similarity_df, trip_df, user_prefer):
 
 
 
-
+'''
 # 예시 입력 (2, 4, 3, 1, 5 순서로 입력 받았을 때)
 input_order = [2, 4, 3, 1, 5]
 user_prefer = ['역사유적지']
@@ -49,3 +49,4 @@ sorted_places = weighted_similarity_with_preference(input_order, similarity_df, 
 
 # 결과 출력
 display(sorted_places)
+'''
