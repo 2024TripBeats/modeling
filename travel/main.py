@@ -39,7 +39,7 @@ master_visit_all = pd.read_csv('/root/TripBeats_modeling-repo/travel/master_visi
 model_path = '/root/TripBeats_modeling-repo/travel/bayesian_regression.pkl'
 
 
-#restaurant recomm
+#여행설문_식당당설문
 rest_survey = {
     "restaurant": [
         "로컬 맛집",
@@ -51,6 +51,7 @@ rest_survey = {
     ]
 }
 
+#여행설문_숙소설문
 acc_prefer = {"accomodation": [
     "주차시설",
     "20평 ~ 10평",
@@ -58,6 +59,7 @@ acc_prefer = {"accomodation": [
 ],
 "requiredAccomText": '',
 "accompriority": "좋은 품질"}
+
 
 user_features = {
     'GENDER': [1],
@@ -68,16 +70,21 @@ user_features = {
     'TRAVEL_STYL_4': [2]
 }
 
-input_order = [2, 4, 3, 1, 5]
-user_prefer = ['역사유적지']
+#여행 설문 
+travelCategory = ['역사유적지']
 
+#이전 컨퍼와 동일_회원가입 
+input_order = [2, 4, 3, 1, 5] #회원가입시 받는 여행지 사진 선호 순서 
+user_openness = 2  # 개방도 (1~5)
+
+#이전 컨퍼와 동일_여행설문 
 user_trip_days = 3  # 2박 3일
 user_difficulty = [3, 4, 2]  # 각 날짜별 난이도
-user_openness = 2  # 개방도 (1~5)
-start_time = '오전'  # 여행 시작 시간 (오전 9시)
-  # 여행 종료 제한 시간 (밤 10시)
-  # 여행지 간 최대 거리 (KM)
- # 하루 최대 여행지 수
+
+
+
+departureTime = '오전'  # 여행 시작 시간 (오전 9시)
+
 
 
 
@@ -86,8 +93,8 @@ def main(user_prefer,rest_survey, df_re,df_ca,df_ac,input_order, sim_df, df_tr, 
   cafe_df = cafe_recomm(df_ca, rest_survey)
   acco_df = rank_accommodation(acc_prefer, df_ac)
 
-  trip_df = combined_recommendation(input_order, sim_df, df_tr, model_path, master_visit_all, user_prefer, user_features)
-  recommendation_result = generate_recommendation(rest_df, cafe_df, acco_df, trip_df, user_trip_days, user_difficulty, start_time)
+  trip_df = combined_recommendation(input_order, sim_df, df_tr, model_path, master_visit_all, travelCategory, user_features)
+  recommendation_result = generate_recommendation(rest_df, cafe_df, acco_df, trip_df, user_trip_days, user_difficulty, departureTime)
   return recommendation_result
 
 
