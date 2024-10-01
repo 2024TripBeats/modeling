@@ -471,12 +471,7 @@ TripBeats는 한국관광공사의 API를 활용하여 **1인 여행객의 입�
 
 ---
 
-감사합니다!
-
----
+더욱 풍부한 여행 경험을 원하신다면 TripBeats와 함께하세요!
 
 **앱 다운로드/서비스 URL**: [https://www.tripbeats.site](https://www.tripbeats.site)
 
----
-
-더욱 풍부한 여행 경험을 원하신다면 TripBeats와 함께하세요!
