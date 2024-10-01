@@ -5,24 +5,6 @@ from geopy.distance import geodesic
 import random
 import pandas as pd
 
-#데이터 프레임 
-# 파일 경로
-file_path = r"C:\Users\김소민\Desktop\사문\kakao\df.csv"
-trip_df = pd.read_csv(file_path)
-
-df_ca =  pd.read_csv(r"C:\Users\김소민\Desktop\사문\kakao\restaurant_df.csv")
-df_re = pd.read_csv(r"C:\Users\김소민\Desktop\사문\kakao\cafe_df.csv")
-df_ac = pd.read_csv(r"C:\Users\김소민\Desktop\사문\kakao\숙박_처리완.csv")
-
-
-#input 파라미터
-user_trip_days = 3  # 2박 3일
-user_difficulty = [3, 4, 2]  # 각 날짜별 난이도
-user_openness = 2  # 개방도 (1~5)
-start_time = '09:00:00'  # 여행 시작 시간 (오전 9시)
-end_time = '22:00:00'  # 여행 종료 제한 시간 (밤 10시)
-max_travel_distance = 10  # 여행지 간 최대 거리 (KM)
-max_daily_places = 4  # 하루 최대 여행지 수
 
 
 
@@ -105,6 +87,13 @@ def select_tourist_place(trip_df, last_place, visited_places, max_distance, user
     
     return None, 0
 
+def determine_start_time(first_day_start):
+    if first_day_start == '오전':
+        return datetime.strptime("09:00:00", "%H:%M:%S")
+    elif first_day_start == '오후':
+        return datetime.strptime("14:00:00", "%H:%M:%S")
+    elif first_day_start == '밤':
+        return datetime.strptime("22:00:00", "%H:%M:%S")
 
 def generate_day_plan(restaurant_df, cafe_df, trip_df, start_datetime, end_time, user_difficulty, visited_places, cafes_added, current_accommodation, candidate_categories):
     selected_places = []
@@ -249,6 +238,7 @@ def format_itinerary(itinerary):
             "travelSegments": travel_segments
         })
     return formatted_itinerary
+
 
 def generate_recommendation(restaurant_df, cafe_df, accommodation_df, trip_df, user_trip_days, user_difficulty, start_time_option):
     visited_places = set()
