@@ -329,7 +329,7 @@ TripBeats는 한국관광공사의 API를 활용하여 **1인 여행객의 입�
 
 ### **백엔드 아키텍처**
 
-![백앤드 흐름도](asset/frontend_backend_pipeline.png)
+![백앤드 흐름도](assets/frontend_backend_pipeline.png)
 
 - **Spring Boot 서버**
 
