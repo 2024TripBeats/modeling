@@ -297,7 +297,7 @@ TripBeats는 한국관광공사의 API를 활용하여 **1인 여행객의 입�
 
   - 사용자 선호 장르와 해시태그, 개방도 등을 고려하여 음악 목록을 축소합니다.
   - **FAISS 라이브러리**를 활용하여 빠른 유사도 검색을 구현합니다.
-    ![유저 선호 해시태그의 t-sne 임베딩](assets/user_preference_hashtags.png)
+    ![유저 선호 해시태그의 t-sne 임베딩](assets/user_preference_hashtags.png|400)
 
 - **시간대별 어울림 점수 적용**
 
@@ -317,7 +317,7 @@ TripBeats는 한국관광공사의 API를 활용하여 **1인 여행객의 입�
 
   - **XGBoost**와 **LightGBM 앙상블 블렌딩**을 통해 예측 성능 향상
   - 회귀 모델 평가 지표(MSE, RMSE, RMSLE, MAPE 등)를 활용하여 성능 검증
-    ![항공권 가격 예측](assets/flight_prediction.png)
+    ![항공권 가격 예측](assets/flight_prediction.png|400)
 
 #### b. **코스별 총 경비 계산**
 
