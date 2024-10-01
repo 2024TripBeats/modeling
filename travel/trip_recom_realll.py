@@ -11,6 +11,13 @@ from pycaret.regression import predict_model
 
 
 def combined_recommendation(input_order, similarity_df, trip_df, model, master_visit_all, user_prefer, user_features):
+        # 길이를 맞추기 위해 공통 인덱스를 사용하여 두 데이터프레임을 필터링
+    common_index = similarity_df.index.intersection(trip_df.index)
+    trip_df_filtered = trip_df.loc[common_index]
+    similarity_df_filtered = similarity_df.loc[common_index]
+    
+    # 이제 두 Series를 더할 수 있음
+    similarity_df_filtered['weighted_similarity'] = weighted_sim.loc[common_index] + trip_df_filtered['category_match']
 
     # 5개 장소의 tourist_id 정의 (입력받는 순서를 기준으로 사용할 장소들)
     place_ids = ['CNTS_200000000010956', 'CONT_000000000500103', 'CNTS_000000000022353', 'CNTS_000000000022082', 'CNTS_000000000022063']
