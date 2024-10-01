@@ -38,7 +38,6 @@ def trip_recomm(input_order, similarity_df, trip_df, user_prefer):
 
 
 
-
 '''
 # 예시 입력 (2, 4, 3, 1, 5 순서로 입력 받았을 때)
 input_order = [2, 4, 3, 1, 5]
